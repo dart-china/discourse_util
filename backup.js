@@ -22,31 +22,35 @@ fs.readdirSync(localFolder).forEach(file => {
   backupFiles[file] = true;
 })
 
-ssh.connect({
-  host: process.env.DISCOURSE_HOST,
-  username: process.env.SSH_USER,
-  privateKey: process.env.PRIVATE_KEY,
-}).then(() => {
-  ssh.execCommand('ls', { cwd: remoteFolder }).then(function (result) {
-    const stdout = result.stdout || '';
-    const stderr = result.stderr;
-    if (stderr) {
-      console.error(stderr);
-      return process.exit();
-    }
+console.log('Discourse backup begin!');
 
-    const files = stdout.split(/\r?\n/) || [];
-    Promise.each(files, function (file) {
-      if (_.endsWith(file, extension) && !backupFiles[file]) {
-        console.log(file);
-        return ssh.getFile(path.join(localFolder, file), path.join(remoteFolder, file));
+Promise.delay(6000).then(() => {
+  ssh.connect({
+    host: process.env.DISCOURSE_HOST,
+    username: process.env.SSH_USER,
+    privateKey: process.env.PRIVATE_KEY,
+  }).then(() => {
+    ssh.execCommand('ls', { cwd: remoteFolder }).then(function (result) {
+      const stdout = result.stdout || '';
+      const stderr = result.stderr;
+      if (stderr) {
+        console.error(stderr);
+        return process.exit();
       }
-    }).then(function () {
-      console.log('Discourse backup finished!');
-      process.exit();
+
+      const files = stdout.split(/\r?\n/) || [];
+      Promise.each(files, function (file) {
+        if (_.endsWith(file, extension) && !backupFiles[file]) {
+          console.log(file);
+          return ssh.getFile(path.join(localFolder, file), path.join(remoteFolder, file));
+        }
+      }).then(function () {
+        console.log('Discourse backup finished!');
+        process.exit();
+      });
     });
+  }, (error) => {
+    console.error('Discourse backup error', error);
+    process.exit();
   });
-}, (error) => {
-  console.error('Discourse backup error', error);
-  process.exit();
 });
