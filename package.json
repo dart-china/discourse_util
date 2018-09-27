@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/dart-china/discourse_util#readme",
   "dependencies": {
+    "bluebird": "^3.5.2",
     "dotenv": "^6.0.0",
+    "lodash": "^4.17.11",
     "node-ssh": "^5.1.2"
   }
 }
