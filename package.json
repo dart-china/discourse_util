@@ -1,0 +1,23 @@
+{
+  "name": "discourse_util",
+  "version": "0.1.0",
+  "description": "Discourse util for dart-china.org",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dart-china/discourse_util.git"
+  },
+  "author": "jarontai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dart-china/discourse_util/issues"
+  },
+  "homepage": "https://github.com/dart-china/discourse_util#readme",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "node-ssh": "^5.1.2"
+  }
+}
