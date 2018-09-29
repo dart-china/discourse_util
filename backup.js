@@ -1,13 +1,16 @@
-require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const Promise = require('bluebird');
 const SimpleNodeLogger = require('simple-node-logger');
 const SSH = require('node-ssh');
-
 const ssh = new SSH();
 const extension = 'tar.gz';
+
+require('dotenv').config({
+  path: path.join(__dirname, '.env'),
+});
+
 const localFolder = process.env.LOCAL_BACKUP_FOLDER;
 const remoteFolder = process.env.REMOTE_BACKUP_FOLDER || '/var/discourse/shared/standalone/backups/default';
 
@@ -23,8 +26,9 @@ fs.readdirSync(localFolder).forEach(file => {
   backupFiles[file] = true;
 })
 
+const logFile = path.join(localFolder, 'backup.log');
 const logger = SimpleNodeLogger.createSimpleLogger({
-  logFilePath: path.join(localFolder, 'backup.log'),
+  logFilePath: logFile,
   timestampFormat: 'YYYY-MM-DD HH:mm:ss',
 });
 logger.info('Backup begin!');
@@ -46,7 +50,7 @@ Promise.delay(6000).then(() => {
       const files = stdout.split(/\r?\n/) || [];
       Promise.each(files, (file) => {
         if (_.endsWith(file, extension) && !backupFiles[file]) {
-          logger.info('Backup file', file);
+          logger.info('Backup file ', file);
           return ssh.getFile(path.join(localFolder, file), path.join(remoteFolder, file));
         } else {
           return Promise.resolve();
