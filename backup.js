@@ -45,22 +45,22 @@ class BackupClient {
 
   run() {
     this.logger.info('Backup begin!');
-    Promise.delay(6000).then(() => {
-      ssh.connect({
+    return Promise.delay(6000).then(() => {
+      return ssh.connect({
         host: process.env.DISCOURSE_HOST,
         username: process.env.SSH_USER,
         privateKey: process.env.PRIVATE_KEY,
       }).then(() => {
-        ssh.execCommand('ls', { cwd: this.remoteFolder }).then((result) => {
+        return ssh.execCommand('ls', { cwd: this.remoteFolder }).then((result) => {
           const stdout = result.stdout || '';
           const stderr = result.stderr;
           if (stderr) {
             this.logger.error('ls error', stderr);
-            return process.exit();
+            return Promise.reject();
           }
 
           const files = stdout.split(/\r?\n/) || [];
-          Promise.each(files, (file) => {
+          return Promise.each(files, (file) => {
             if (_.endsWith(file, this.extension) && !this.backupFiles[file]) {
               this.logger.info('Backup file ', file);
               return ssh.getFile(path.join(this.localFolder, file), path.join(this.remoteFolder, file));
@@ -73,7 +73,6 @@ class BackupClient {
         });
       }, (error) => {
         this.logger.error('SSH error', error);
-        process.exit();
       });
     });
   }

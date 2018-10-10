@@ -8,6 +8,12 @@ if (!client.init()) {
   return process.exit();
 }
 
-schedule.scheduleJob('30 9,15,20 * * *', function () {
-  client.run();
+client.run().then(() => {
+  schedule.scheduleJob('30 10 * * *', function () {
+    client.run();
+  });
+
+  schedule.scheduleJob('30 15 * * *', function () {
+    client.run();
+  });
 });
