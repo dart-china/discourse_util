@@ -68,6 +68,7 @@ class BackupClient {
               return Promise.resolve();
             }
           }).then((data) => {
+            this.cleanup();
             this.logger.info('Backup finished!');
           });
         });
@@ -75,6 +76,18 @@ class BackupClient {
         this.logger.error('SSH error', error);
       });
     });
+  }
+
+  cleanup() {
+    let arr = _.dropRight(fs.readdirSync(this.localFolder).sort(), 10);
+    if (arr && arr.length) {
+      arr.forEach((val) => {
+        let file = path.join(this.localFolder, val);
+        if (fs.existsSync(file)) {
+          fs.unlinkSync(file);
+        }
+      });
+    }
   }
 }
 
