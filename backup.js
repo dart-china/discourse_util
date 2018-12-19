@@ -79,7 +79,7 @@ class BackupClient {
   }
 
   cleanup() {
-    let arr = _.dropRight(fs.readdirSync(this.localFolder).sort(), 10);
+    let arr = _.dropRight(fs.readdirSync(this.localFolder).sort(), 5);
     if (arr && arr.length) {
       arr.forEach((val) => {
         let file = path.join(this.localFolder, val);
